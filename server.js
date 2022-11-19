@@ -45,6 +45,13 @@ const fruitsSchema = new  Schema({
 
 const Fruit = model('Fruit', fruitsSchema)
 
+const userSchema = new  Schema({
+    name: String,
+    age: String,
+    readyToEat: Boolean
+})
+const User = model('User', userSchema)
+
 
 //////////////////////////////////////////////
 //////// Middlewares
@@ -93,7 +100,6 @@ app.get('/fruits', (req, res) => {
     // Get all fruits from mongo and send them back
     Fruit.find({})
     .then((fruits) => {
-        console.log(fruits)
         // res.json(fruits)
         res.render('fruits/index.ejs', { fruits })
     })
@@ -101,12 +107,26 @@ app.get('/fruits', (req, res) => {
 
 })
 
+app.get('/fruits/new', (req, res) => {
+    res.render('fruits/new.ejs')
+})
+
+app.post('/fruits', (req, res) => {
+    
+    req.body.readyToEat = req.body.readyToEat === 'on' ? true : false
+
+    Fruit.create(req.body, (err, createdFruit) =>{
+        console.log('created' , createdFruit, err)
+        res.redirect('/fruits')
+    })
+} )
+
 app.get('/fruits/:id', (req, res)=>{
 
     // Go and get fruit from the database
     Fruit.findById(req.params.id)
     .then((fruit)=> {
-        res.json(fruit)
+        res.render('fruits/show.ejs', {fruit})
     })
 })
 
